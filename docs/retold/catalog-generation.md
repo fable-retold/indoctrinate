@@ -111,7 +111,7 @@ The Docsify hub plugin transforms catalog entries into route aliases:
 ```javascript
 // For module: { Group: "fable", Name: "fable-log", Repo: "fable-log", Branch: "master" }
 // Generates alias:
-'/fable/fable-log/(.*)' -> 'https://raw.githubusercontent.com/stevenvelozo/fable-log/master/docs/$1'
+'/fable/fable-log/(.*)' -> 'https://raw.githubusercontent.com/fable-retold/fable-log/master/docs/$1'
 ```
 
 This means the URL `/#/fable/fable-log/getting-started.md` smoothly fetches from GitHub.

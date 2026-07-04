@@ -13,7 +13,7 @@ Indoctrinate powers the unified Retold documentation hub, which aggregates docum
 
 The `generate_catalog` command scans all modules locally and produces `retold-catalog.json`. This file maps every module's documentation structure: which modules have docs, their sidebar navigation, and their GitHub repo names.
 
-The Docsify hub loads this catalog and builds route aliases so that a URL like `/#/fable/fable-log/getting-started.md` fetches content from `https://raw.githubusercontent.com/stevenvelozo/fable-log/master/docs/getting-started.md`.
+The Docsify hub loads this catalog and builds route aliases so that a URL like `/#/fable/fable-log/getting-started.md` fetches content from `https://raw.githubusercontent.com/fable-retold/fable-log/master/docs/getting-started.md`.
 
 ### Keyword Index (Search)
 
