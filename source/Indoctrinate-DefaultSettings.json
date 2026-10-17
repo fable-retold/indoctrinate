@@ -7,7 +7,7 @@
 
 	"ProgramConfigurationFileName": ".indoctrinate.config.json",
 
-	"IgnoredFileNames": ["node_modules", ".git", ".DS_Store", ".nyc_output", "dist", "build", "coverage", "out", "tmp"],
+	"IgnoredFileNames": ["node_modules", ".git", ".DS_Store", ".nyc_output", "dist", "build", "coverage", "out", "tmp", ".build", ".swiftpm", "DerivedData", "Pods", ".gradle", "target", "__pycache__", ".pytest_cache", ".next", ".nuxt", ".svelte-kit", ".turbo", ".parcel-cache", ".cache"],
 
 	"ExcludedModules": [],
 

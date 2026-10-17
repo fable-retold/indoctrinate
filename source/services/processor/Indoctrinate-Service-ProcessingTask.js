@@ -4,12 +4,18 @@ const libFS = require('fs');
 const libPath = require('path');
 const libCrypto = require('crypto');
 
+// Files are hashed in chunks of this size so memory use does not grow with file size.
+const DEFAULT_HASH_CHUNK_SIZE = 4 * 1024 * 1024;
+// Floor for the hash buffer so files that stat as 0 bytes but still have content (e.g. procfs) read in sane chunks.
+const MINIMUM_HASH_BUFFER_SIZE = 64 * 1024;
+
 class IndoctrinateServiceProcessingTask extends libPictServiceCommandLineUtility.ServiceProviderBase
 {
 	constructor(pFable, pOptions, pServiceHash)
 	{
 		super(pFable, pOptions, pServiceHash);
 		this.serviceType = 'IndoctrinateProcessor';
+		this.hashChunkSize = DEFAULT_HASH_CHUNK_SIZE;
 		//this.log.info('Constructed Extended Processor Service.');
 	}
 
@@ -17,10 +23,16 @@ class IndoctrinateServiceProcessingTask extends libPictServiceCommandLineUtility
 	{
 		const tmpFileName = this.constructFileName(pContentDescription);
 		const tmpFileDescriptor = libFS.openSync(tmpFileName, 'r');
-		const tmpByteBuffer = Buffer.alloc(pLength);
-		libFS.readSync(tmpFileDescriptor, tmpByteBuffer, 0, pLength, pStartByte);
-		libFS.closeSync(tmpFileDescriptor);
-		return tmpByteBuffer;
+		try
+		{
+			const tmpByteBuffer = Buffer.alloc(pLength);
+			libFS.readSync(tmpFileDescriptor, tmpByteBuffer, 0, pLength, pStartByte);
+			return tmpByteBuffer;
+		}
+		finally
+		{
+			libFS.closeSync(tmpFileDescriptor);
+		}
 	}
 
 	readTailBytesSync(pContentDescription, pLength)
@@ -40,8 +52,23 @@ class IndoctrinateServiceProcessingTask extends libPictServiceCommandLineUtility
 	{
 		const tmpFileName = this.constructFileName(pContentDescription);
 		const tmpHash = libCrypto.createHash('md5');
-		const tmpBuffer = libFS.readFileSync(tmpFileName);
-		tmpHash.update(tmpBuffer);
+		const tmpFileDescriptor = libFS.openSync(tmpFileName, 'r');
+		try
+		{
+			// One buffer per file, never larger than a chunk; small files don't pay for a full chunk.
+			const tmpFileSize = libFS.fstatSync(tmpFileDescriptor).size;
+			const tmpBuffer = Buffer.allocUnsafe(Math.min(this.hashChunkSize, Math.max(tmpFileSize, MINIMUM_HASH_BUFFER_SIZE)));
+			let tmpBytesRead = libFS.readSync(tmpFileDescriptor, tmpBuffer, 0, tmpBuffer.length, null);
+			while (tmpBytesRead > 0)
+			{
+				tmpHash.update(tmpBuffer.subarray(0, tmpBytesRead));
+				tmpBytesRead = libFS.readSync(tmpFileDescriptor, tmpBuffer, 0, tmpBuffer.length, null);
+			}
+		}
+		finally
+		{
+			libFS.closeSync(tmpFileDescriptor);
+		}
 		return tmpHash.digest('hex');
 	}
 

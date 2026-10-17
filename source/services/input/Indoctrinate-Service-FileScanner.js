@@ -18,7 +18,7 @@ class FileScanner extends libPictServiceCommandLineUtility.ServiceProviderBase
 		this.ignoredFileNames = Array.isArray(pIgnoredFileNames) ? pIgnoredFileNames :
 			Array.isArray(this.options.IgnoredFileNames) ? this.options.IgnoredFileNames :
 				Array.isArray(this.fable.settings.IgnoredFileNames) ? this.fable.settings.IgnoredFileNames :
-					["node_modules", ".git", ".DS_Store", ".nyc_output", "dist", "build", "coverage", "out", "tmp"]
+					["node_modules", ".git", ".DS_Store", ".nyc_output", "dist", "build", "coverage", "out", "tmp", ".build", ".swiftpm", "DerivedData", "Pods", ".gradle", "target", "__pycache__", ".pytest_cache", ".next", ".nuxt", ".svelte-kit", ".turbo", ".parcel-cache", ".cache"]
 
 		this.ignoredFileNameMap = {};
 
